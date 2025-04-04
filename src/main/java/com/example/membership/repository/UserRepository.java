@@ -28,4 +28,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return 是否存在
      */
     boolean existsByUsername(String username);
+    
+    /**
+     * 根据手机号查找用户
+     * @param phone 手机号
+     * @return 用户信息
+     */
+    @Query("SELECT u FROM User u WHERE u.phone = :phone")
+    Optional<User> findByPhone(@Param("phone") String phone);
+    
+    /**
+     * 检查手机号是否已存在
+     * @param phone 手机号
+     * @return 是否存在
+     */
+    boolean existsByPhone(String phone);
 } 

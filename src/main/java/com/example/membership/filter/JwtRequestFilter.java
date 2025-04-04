@@ -39,7 +39,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         // 对于登录和注册请求，直接放行
         if (request.getServletPath().equals("/api/user/login") ||
-            request.getServletPath().equals("/api/user/register")) {
+            request.getServletPath().equals("/api/user/register")){
             chain.doFilter(request, response);
             return;
         }

@@ -36,6 +36,12 @@ public class User {
     
     @Column(precision = 10, scale = 2)
     private BigDecimal balance; // 卡内余额
+
+     @Column(precision = 10, scale = 2)
+    private BigDecimal totalRecharge; // 总充值金额
+
+     @Column(precision = 10, scale = 2)
+    private BigDecimal totalSpent; // 总消费金额
     
     @Column(name = "last_visit")
     private LocalDateTime lastVisit; // 上次到店时间

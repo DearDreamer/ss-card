@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
     phone_number VARCHAR(20),
     card_type VARCHAR(20) DEFAULT '普通会员',
     balance DECIMAL(10, 2) DEFAULT 0.00,
+    totalRecharge DECIMAL(10, 2) DEFAULT 0.00,
+    totalSpent DECIMAL(10, 2) DEFAULT 0.00,
     last_visit DATETIME,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL
@@ -15,13 +17,15 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS transactions (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
+    phone_number VARCHAR(20) not null,
     amount DECIMAL(10, 2) NOT NULL,
     transaction_time DATETIME NOT NULL,
     transaction_type VARCHAR(20) NOT NULL,
     transaction_desc VARCHAR(100),
     created_at DATETIME NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
-);
+    );
+
 
 -- 添加测试数据（可选）
 INSERT INTO users (username, password, phone_number, card_type, balance, created_at, updated_at)

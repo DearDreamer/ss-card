@@ -69,7 +69,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/error",
                 "/v3/api-docs/**",
                 "/swagger-ui/**",
-                "/swagger-ui.html"
+                "/swagger-ui.html",
+                // 临时放行管理员API接口，后续需要添加管理员权限控制
+                "/api/v1/member/register",
+                "/api/v1/member/info",
+                "/api/v1/transaction/process"
             ).permitAll()
             .anyRequest().authenticated()
             .and()

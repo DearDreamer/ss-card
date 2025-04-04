@@ -25,7 +25,10 @@ public class Transaction {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    
+
+    @Column(nullable = false)
+    private String phone_number;
+
     @Column(nullable = false)
     private BigDecimal amount; // 交易金额
     
