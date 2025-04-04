@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * 管理员服务实现类
@@ -46,7 +47,11 @@ public class AdminServiceImpl implements AdminService {
         user.setPhone(request.getPhone());
         // 设置一个默认密码，后续可以修改
         user.setPassword(passwordEncoder.encode(request.getPhone().substring(request.getPhone().length() - 6)));
-        user.setBalance(request.getInitialAmount());
+        user.setBalance(
+                Optional.ofNullable(request.getInitialAmount())
+                        .orElse(BigDecimal.ZERO)
+                        .add(request.getInitialAmount())
+        );
         user.setTotalRecharge(request.getInitialAmount());
         user.setTotalSpent(BigDecimal.ZERO);
         user.setLastVisit(LocalDateTime.now());
@@ -72,14 +77,22 @@ public class AdminServiceImpl implements AdminService {
         switch (request.getType()) {
             case RECHARGE:
                 user.setBalance(user.getBalance().add(request.getAmount()));
-                user.setTotalRecharge(user.getTotalRecharge().add(request.getAmount()));
+                user.setTotalRecharge(
+                        Optional.ofNullable(user.getTotalRecharge())
+                                .orElse(BigDecimal.ZERO)
+                                .add(request.getAmount())
+                );
                 break;
             case CONSUMPTION:
                 if (user.getBalance().compareTo(request.getAmount()) < 0) {
                     throw new IllegalStateException("余额不足");
                 }
                 user.setBalance(user.getBalance().subtract(request.getAmount()));
-                user.setTotalSpent(user.getTotalSpent().add(request.getAmount()));
+                user.setTotalSpent(
+                        Optional.ofNullable(user.getTotalSpent())
+                                .orElse(BigDecimal.ZERO)
+                                .add(request.getAmount())
+                );
                 break;
             default:
                 throw new IllegalArgumentException("不支持的交易类型");
