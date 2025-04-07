@@ -59,24 +59,24 @@ public class AuthController {
     }
     
     /**
-     * 用户注册
-     * @param request 注册请求
-     * @return 注册结果
+     * 用户修改密码
+     * @param request 请求
+     * @return 结果
      */
-    @PostMapping("/register")
-    @Operation(summary = "用户注册", description = "注册新用户")
+    @PostMapping("/changePwd")
+    @Operation(summary = "用户修改密码", description = "修改密码")
     public ApiResponse<Void> register(@Valid @RequestBody LoginRequest request) {
         try {
-            authService.register(request.getUsername(), request.getPassword(), request.getPassword());
+            authService.changePwd(request.getUsername(), request.getPassword(), request.getPassword());
             
             ApiResponse<Void> response = new ApiResponse<>();
             response.setSuccess(true);
-            response.setMessage("注册成功");
+            response.setMessage("修改密码成功");
             response.setStatusCode(200);
             
             return response;
         } catch (Exception e) {
-            log.error("注册失败: {}", e.getMessage());
+            log.error("修改密码失败: {}", e.getMessage());
             
             ApiResponse<Void> response = new ApiResponse<>();
             response.setSuccess(false);

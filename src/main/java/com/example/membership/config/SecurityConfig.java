@@ -62,18 +62,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .csrf().disable()
             .authorizeRequests()
-            .antMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 允许所有OPTIONS请求
+            .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .antMatchers(
                 "/api/user/login",
-                "/api/user/register",
+                "/api/user/changePwd",
                 "/error",
                 "/v3/api-docs/**",
                 "/swagger-ui/**",
-                "/swagger-ui.html",
-                // 临时放行管理员API接口，后续需要添加管理员权限控制
-                "/api/v1/member/register",
-                "/api/v1/member/info",
-                "/api/v1/transaction/process"
+                "/swagger-ui.html"
+//                "/api/v1/member/register",
+//                "/api/v1/member/info",
+//                "/api/v1/transaction/process"
             ).permitAll()
             .anyRequest().authenticated()
             .and()
@@ -81,12 +80,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // 开发环境下的HTTPS配置
+        http.requiresChannel(channel -> channel
+            .anyRequest().requiresInsecure());  // 允许HTTP请求
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Collections.singletonList("*")); // 使用allowedOriginPatterns替代allowedOrigins
+        // 允许前端域名
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:5173",
+            "http://192.168.155.158:5173",
+            "https://192.168.155.158:5173",
+                "https://static-mp-d16977d7-dccf-4274-9b9a-0a7978527360.next.bspapp.com/",
+                "http://static-mp-d16977d7-dccf-4274-9b9a-0a7978527360.next.bspapp.com/"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList(
             "Authorization",
@@ -99,7 +109,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         ));
         configuration.setExposedHeaders(Collections.singletonList("Authorization"));
         configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L); // 预检请求的有效期，单位为秒
+        configuration.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

@@ -89,12 +89,13 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     @Transactional
-    public boolean register(String username, String password, String confirmPassword) {
+    public boolean changePwd(String username, String password, String confirmPassword) {
         log.debug("开始处理注册请求: {}", username);
-        
+
+        User user = userRepository.findByPhone(username).orElse(null);
         // 检查用户名是否已存在
-        if (userRepository.existsByUsername(username)) {
-            throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
+        if (user == null) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
         
         // 检查两次密码是否一致
@@ -106,19 +107,14 @@ public class AuthServiceImpl implements AuthService {
             // 解密密码
             String decryptedPassword = aesUtil.decrypt(password);
             
-            // 创建新用户
-            User user = new User();
-            user.setUsername(username);
+            // 修改用户
             user.setPassword(passwordEncoder.encode(decryptedPassword));
-            user.setPhone(username); // 手机号就是用户名
-            user.setCardType("普通会员"); // 默认为普通会员
-            user.setBalance(BigDecimal.ZERO); // 默认余额为0
-            
+
             userRepository.save(user);
-            log.info("用户注册成功: {}", username);
+            log.info("用户修改密码成功: {}", username);
             return true;
         } catch (Exception e) {
-            log.error("注册过程发生异常: {}", e.getMessage());
+            log.error("修改密码过程发生异常: {}", e.getMessage());
             throw new CustomException(ErrorCode.SYSTEM_ERROR);
         }
     }

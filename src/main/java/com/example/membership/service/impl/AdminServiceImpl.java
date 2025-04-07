@@ -49,14 +49,26 @@ public class AdminServiceImpl implements AdminService {
         user.setPassword(passwordEncoder.encode(request.getPhone().substring(request.getPhone().length() - 6)));
         user.setBalance(
                 Optional.ofNullable(request.getInitialAmount())
-                        .orElse(BigDecimal.ZERO)
-                        .add(request.getInitialAmount())
+                        .map(amount -> amount.add(amount))  // 非null时：amount + amount
+                        .orElse(BigDecimal.ZERO)            // null时：0
         );
         user.setTotalRecharge(request.getInitialAmount());
         user.setTotalSpent(BigDecimal.ZERO);
         user.setLastVisit(LocalDateTime.now());
-        user.setCardType("普通会员");
-
+        user.setCardType("黄金会员");
+        //记录第一次充值记录
+        if (request.getInitialAmount() != null && request.getInitialAmount().compareTo(BigDecimal.ZERO) > 0) {
+            // 记录交易
+            Transaction transaction = new Transaction();
+            transaction.setUser(user);
+            transaction.setPhone_number(request.getPhone());
+            transaction.setAmount(request.getInitialAmount());
+            transaction.setType(Transaction.TransactionType.RECHARGE);
+            transaction.setTime(LocalDateTime.now());
+            transaction.setDescription("管理员充值");
+            // 保存交易记录
+            transactionRepository.save(transaction);
+        }
         return userRepository.save(user);
     }
 

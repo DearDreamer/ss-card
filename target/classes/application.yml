@@ -1,8 +1,8 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ss_card?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: root
+    url: jdbc:mysql://localhost:3306/ss-card?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: ss-card
     password: 123456
 
   jpa:
@@ -34,9 +34,16 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 server:
-  port: 8080
+  port: 8090  # 改回HTTP端口
   servlet:
     context-path: /
+  # 开发环境下禁用SSL
+  ssl:
+    enabled: false
+
+# 配置HTTP端口（可选，用于HTTP自动重定向到HTTPS）
+http:
+  port: 8090
 
 jwt:
   secret: your-secret-key-here-must-be-at-least-32-characters

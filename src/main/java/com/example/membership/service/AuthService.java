@@ -16,11 +16,11 @@ public interface AuthService {
     LoginResponse login(LoginRequest loginRequest);
     
     /**
-     * 用户注册
+     *修改密码
      * @param username 用户名
      * @param password 密码
      * @param confirmPassword 确认密码
-     * @return 注册是否成功
+     * @return 是否成功
      */
-    boolean register(String username, String password, String confirmPassword);
+    boolean changePwd(String username, String password, String confirmPassword);
 } 

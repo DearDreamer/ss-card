@@ -5,12 +5,15 @@ import com.example.membership.model.dto.admin.MemberRegisterRequest;
 import com.example.membership.model.dto.admin.TransactionRequest;
 import com.example.membership.model.entity.User;
 import com.example.membership.service.AdminService;
+import com.example.membership.util.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collections;
 
 /**
  * 管理员控制器
@@ -18,6 +21,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
+@Slf4j
 @Tag(name = "管理员接口", description = "提供会员管理和交易处理等功能")
 public class AdminController {
 
@@ -29,6 +33,10 @@ public class AdminController {
     @PostMapping("/member/register")
     @Operation(summary = "注册新会员", description = "管理员注册新会员")
     public ApiResponse<User> registerMember(@Valid @RequestBody MemberRegisterRequest request) {
+        if(!("18856436601").equals(SecurityUtil.getCurrentUser().getUsername())){
+            log.warn("非管理员");
+            return ApiResponse.error("非管理员无法操作", 404);
+        }
         try {
             User member = adminService.registerMember(request);
             return ApiResponse.success("会员注册成功", member);
@@ -45,6 +53,10 @@ public class AdminController {
     @GetMapping("/member/info")
     @Operation(summary = "查询会员信息", description = "根据手机号查询会员信息")
     public ApiResponse<User> getMemberInfo(@RequestParam String phone) {
+        if(!("18856436601").equals(SecurityUtil.getCurrentUser().getUsername())){
+            log.warn("非管理员");
+            return ApiResponse.error("非管理员无法操作", 404);
+        }
         try {
             User member = adminService.getMemberInfo(phone);
             return ApiResponse.success("查询成功", member);
@@ -62,6 +74,10 @@ public class AdminController {
     @PostMapping("/transaction/process")
     @Operation(summary = "处理交易", description = "会员账户充值或消费")
     public ApiResponse<User> processTransaction(@Valid @RequestBody TransactionRequest request) {
+        if(!("18856436601").equals(SecurityUtil.getCurrentUser().getUsername())){
+            log.warn("非管理员");
+            return ApiResponse.error("非管理员无法操作", 404);
+        }
         try {
             User user = adminService.processTransaction(request);
             return ApiResponse.success("处理成功", user);
